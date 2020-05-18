@@ -1,23 +1,17 @@
 #!flask/bin/python
 from flask import Flask, jsonify, abort, make_response, request
 from flask_httpauth import HTTPBasicAuth
+import datetime
 
 auth = HTTPBasicAuth()
 
 app = Flask(__name__)
 
-tasks = [
+statuses = [
     {
-        'id': 1,
-        'title': u'Buy groceries',
-        'description': u'Milk, Cheese, Pizza, Fruit, Tylenol', 
-        'done': False
-    },
-    {
-        'id': 2,
-        'title': u'Learn Python',
-        'description': u'Need to find a good Python tutorial on the web', 
-        'done': False
+        'title': 'curl -u matt:python -i http://localhost:5000/log/api/v1.0/new?title="example_status_no_spaces"',
+        'timestamp': datetime.datetime.now().timestamp(),
+        'timestamp_readable': datetime.datetime.now()  
     }
 ]
 
@@ -30,35 +24,34 @@ def get_password(username):
 @auth.error_handler
 def unauthorized():
     return make_response(jsonify({'error': 'Unauthorized access'}), 403)
-
-@app.route('/')
-def index():
-    return "Hello, World!"
     
-@app.route('/todo/api/v1.0/new', methods=['POST'])
+@app.route('/new', methods=['POST', 'GET'])
 @auth.login_required
-def create_task():
-    if not request.json or not 'title' in request.json:
-        abort(400)
-    task = {
-        'id': tasks[-1]['id'] + 1,
-        'title': request.json['title'],
-        'description': request.json.get('description', ""),
-        'done': False
-    }
-    tasks.append(task)
-    return jsonify({'task': task}), 201
-
-@app.route('/todo/api/v1.0/tasks', methods=['GET'])
-def get_tasks():
-    return jsonify({'tasks': tasks})
+def create_status():
+    # At least try to clean up user-submitted data
+    # https://stackoverflow.com/a/7406369/2152245
+    keepcharacters = (' ','.','_')
+    safer_title = "".join(c for c in request.args.get("title") if c.isalnum() or c in keepcharacters).rstrip()
+    # Limit the length
+    safer_title = safer_title[:256]
     
-@app.route('/todo/api/v1.0/tasks/<int:task_id>', methods=['GET'])
-def get_task(task_id):
-    task = [task for task in tasks if task['id'] == task_id]
-    if len(task) == 0:
-        abort(404)
-    return jsonify({'task': task[0]})
+    status = {
+        'title': safer_title,
+        'timestamp': datetime.datetime.now().timestamp(),
+        'timestamp_readable': datetime.datetime.now()
+    }
+    # Add status to list
+    statuses.append(status)
+    # If list is too big, delete the first item
+    # Simple way to prevent someone filling up memory
+    if len(statuses) > 1000:
+        statuses.pop(0)
+    
+    return jsonify({'status': status}), 201
+    
+@app.route('/', methods=['GET'])
+def get_statuses():
+    return jsonify({'statuses': statuses[::-1]})
     
 @app.errorhandler(404)
 def not_found(error):
