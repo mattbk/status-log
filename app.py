@@ -1,5 +1,5 @@
 #!flask/bin/python
-from flask import Flask, jsonify, abort, make_response, request
+from flask import Flask, jsonify, abort, make_response, request, render_template
 from flask_httpauth import HTTPBasicAuth
 import datetime
 
@@ -52,6 +52,11 @@ def create_status():
 @app.route('/', methods=['GET'])
 def get_statuses():
     return jsonify({'statuses': statuses[::-1]})
+    
+@app.route('/list', methods=['GET'])
+def list():
+    return render_template("list.html", statuses = statuses[::-1])
+
     
 @app.errorhandler(404)
 def not_found(error):
