@@ -10,7 +10,8 @@ app = Flask(__name__)
 
 statuses = [
     {
-        'title': 'curl -u matt:python -i http://localhost:5000/log/api/v1.0/new?title="example_status_no_spaces"',
+        'title': 'app_is_running',
+        'color': "green",
         'timestamp': datetime.datetime.now().timestamp(),
         'timestamp_readable': datetime.datetime.now()  
     }
@@ -38,6 +39,7 @@ def create_status():
     
     status = {
         'title': safer_title,
+        'color': request.args.get("color"),
         'timestamp': datetime.datetime.now().timestamp(),
         'timestamp_readable': datetime.datetime.now()
     }
@@ -57,7 +59,7 @@ def get_statuses_raw():
 @app.route('/', methods=['GET'])
 def get_statuses():
     long_agos = [humanfriendly.format_timespan(datetime.datetime.now().timestamp() - status['timestamp']) for status in statuses[::-1]]
-    return render_template("list.html", 
+    return render_template("index.html", 
                             statuses = statuses[::-1],
                             long_agos = long_agos)
 
