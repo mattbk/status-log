@@ -2,6 +2,7 @@
 from flask import Flask, jsonify, abort, make_response, request, render_template
 from flask_httpauth import HTTPBasicAuth
 import datetime
+import humanfriendly
 
 auth = HTTPBasicAuth()
 
@@ -49,13 +50,16 @@ def create_status():
     
     return jsonify({'status': status}), 201
     
-@app.route('/', methods=['GET'])
-def get_statuses():
+@app.route('/raw', methods=['GET'])
+def get_statuses_raw():
     return jsonify({'statuses': statuses[::-1]})
     
-@app.route('/list', methods=['GET'])
-def list():
-    return render_template("list.html", statuses = statuses[::-1])
+@app.route('/', methods=['GET'])
+def get_statuses():
+    long_agos = [humanfriendly.format_timespan(datetime.datetime.now().timestamp() - status['timestamp']) for status in statuses[::-1]]
+    return render_template("list.html", 
+                            statuses = statuses[::-1],
+                            long_agos = long_agos)
 
     
 @app.errorhandler(404)

@@ -1,6 +1,19 @@
-<ul class="statuses">
+<html>
+<head>
+<link href="/static/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<table class = "statuses">
+<tr><th>What Happened?</th><th>When Did It Happen?</th><th>How Long Has It Been?</th></tr>
   {% for status in statuses %}
-  <li> {{ status.title }}
-  </li>
+  <tr>
+  <td>{{ status.title }}</td><td>{{ status.timestamp_readable }}</td><td>{{ long_agos[loop.index0] }}</td>
+  </tr>
     {% endfor %}
-</ul>
+</table>
+
+
+
+</body>
+</html>
