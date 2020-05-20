@@ -27,7 +27,7 @@ def get_password(username):
 def unauthorized():
     return make_response(jsonify({'error': 'Unauthorized access'}), 403)
     
-@app.route('/new', methods=['POST', 'GET'])
+@app.route('/log/new', methods=['POST', 'GET'])
 @auth.login_required
 def create_status():
     # At least try to clean up user-submitted data
@@ -52,11 +52,11 @@ def create_status():
     
     return jsonify({'status': status}), 201
     
-@app.route('/raw', methods=['GET'])
+@app.route('/log/raw', methods=['GET'])
 def get_statuses_raw():
     return jsonify({'statuses': statuses[::-1]})
     
-@app.route('/', methods=['GET'])
+@app.route('/log', methods=['GET'])
 def get_statuses():
     long_agos = [humanfriendly.format_timespan(datetime.datetime.now().timestamp() - status['timestamp']) for status in statuses[::-1]]
     return render_template("index.html", 

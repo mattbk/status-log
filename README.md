@@ -6,7 +6,7 @@ shows what is done and not done makes it easy to check periodically.
 
 # How?
 
-This tiny Flask API runs on a server (Raspberry Pi, etc.). It has very basic authentication
+This tiny Python 3 Flask API runs on a server (Raspberry Pi, etc.). It has very basic authentication
 and waits for a curl (or similar) GET request with some small amount of data. The data are
 displayed on a simple web page.
 
@@ -15,6 +15,10 @@ curl command into R or Python or Go or Ruby or whatever (I assume) and be able t
 whatever data you pass.
 
 You can either run with the internal Flask development server or something like gunicorn.
+
+I am experimenting with virtualenv, for which I am following the instructions at
+https://blog.miguelgrinberg.com/post/designing-a-restful-api-with-python-and-flask (this 
+is also the place from I cribbed the basic application functions).
 
 # Other Use Cases?
 
